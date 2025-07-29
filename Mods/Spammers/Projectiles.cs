@@ -144,8 +144,6 @@ namespace iiMenu.Mods.Spammers
                         GrowingSnowballThrowable GrowingSnowball = Throwable as GrowingSnowballThrowable;
 
                         int index = Overpowered.GetProjectileIncrement(position, velocity, Throwable.transform.lossyScale.x);
-                        int actorOwner = PhotonNetwork.InRoom ? NetworkSystem.Instance.LocalPlayer.ActorNumber : 0;
-
                         SlingshotProjectile slingshotProjectile = null;
                         if (showSelf)
                         {
@@ -155,45 +153,27 @@ namespace iiMenu.Mods.Spammers
 
                         if (PhotonNetwork.InRoom && !GetIndex("Client Sided Projectiles").enabled)
                         {
-                            if (friendSided)
+                            PhotonNetwork.RaiseEvent(176, new object[]
                             {
-                                Color32 color32 = (Color32)color;
-
-                                object[] projectileSendData = new object[8];
-                                projectileSendData[0] = "sendSnowball";
-                                projectileSendData[1] = position;
-                                projectileSendData[2] = velocity;
-                                projectileSendData[3] = color32.r;
-                                projectileSendData[4] = color32.g;
-                                projectileSendData[5] = color32.b;
-                                projectileSendData[6] = GrowingSnowball.snowballSizeLevels[scale].snowballScale;
-                                projectileSendData[7] = index;
-
-                                PhotonNetwork.RaiseEvent(FriendManager.FriendByte, projectileSendData, options, SendOptions.SendUnreliable);
-                            } else
+                                GrowingSnowball.changeSizeEvent._eventId,
+                                scale
+                            }, options, new SendOptions
                             {
-                                PhotonNetwork.RaiseEvent(176, new object[]
-                                {
-                                    GrowingSnowball.changeSizeEvent._eventId,
-                                    scale
-                                }, options, new SendOptions
-                                {
-                                    Reliability = false,
-                                    Encrypt = true
-                                });
+                                Reliability = false,
+                                Encrypt = true
+                            });
 
-                                PhotonNetwork.RaiseEvent(176, new object[]
-                                {
-                                    GrowingSnowball.snowballThrowEvent._eventId,
-                                    position,
-                                    velocity,
-                                    index
-                                }, options, new SendOptions
-                                {
-                                    Reliability = false,
-                                    Encrypt = true
-                                });
-                            }
+                            PhotonNetwork.RaiseEvent(176, new object[]
+                            {
+                                GrowingSnowball.snowballThrowEvent._eventId,
+                                position,
+                                velocity,
+                                index
+                            }, options, new SendOptions
+                            {
+                                Reliability = false,
+                                Encrypt = true
+                            });
                         }
                     }
                     else
@@ -233,7 +213,7 @@ namespace iiMenu.Mods.Spammers
                                 sendEventData[2] = projectileSendData;
                             }
 
-                            PhotonNetwork.RaiseEvent((byte)(friendSided ? FriendManager.FriendByte : 3), sendEventData, options, SendOptions.SendUnreliable);
+                            PhotonNetwork.RaiseEvent((byte) 3, sendEventData, options, SendOptions.SendUnreliable);
                             RPCProtection();
                         }
                     }

@@ -1510,7 +1510,7 @@ namespace iiMenu.Mods
 
                         volIndicator.GetComponent<Renderer>().material.color = GetPlayerColor(vrrig);
                         volIndicator.transform.localScale = new Vector3(size, size, 0.01f) * vrrig.scaleFactor;
-                        volIndicator.transform.position = vrrig.headMesh.transform.position + vrrig.headMesh.transform.up * ((ServerData.Administrators.ContainsKey(GetPlayerFromVRRig(vrrig).UserId) ? 1.3f : 0.8f) * vrrig.scaleFactor);
+                        volIndicator.transform.position = vrrig.headMesh.transform.position + vrrig.headMesh.transform.up * (0.8f * vrrig.scaleFactor);
                         volIndicator.transform.LookAt(GorillaTagger.Instance.headCollider.transform.position);
                     }
                     else

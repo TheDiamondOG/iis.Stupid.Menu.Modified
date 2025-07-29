@@ -3498,7 +3498,7 @@ namespace iiMenu.Menu
             if (Time.time < (timeMenuStarted + 5f))
                 yield break;
 
-            string fileName = $"{GetSHA256(text)}{(narratorIndex == 0 ? ".wav" : ".mp3")}";
+            string fileName = $"{GetSHA256(text)}{(".mp3")}";
             string directoryPath = $"{PluginInfo.BaseDirectory}/TTS{(narratorName == "Default" ? "" : narratorName)}";
             string filePath = directoryPath + "/" + fileName;
 
@@ -3507,37 +3507,13 @@ namespace iiMenu.Menu
 
             if (!File.Exists(filePath))
             {
-                string postData = "{\"text\": \"" + text.Replace("\n", "").Replace("\r", "").Replace("\"", "") + "\"}";
+                using UnityWebRequest request = UnityWebRequest.Get("https://api.streamelements.com/kappa/v2/speech?voice=" + narratorName + "&text=" + UnityWebRequest.EscapeURL(text));
+                yield return request.SendWebRequest();
 
-                if (narratorIndex == 0)
-                {
-                    using UnityWebRequest request = new UnityWebRequest("https://iidk.online/tts", "POST");
-                    byte[] raw = Encoding.UTF8.GetBytes(postData);
-
-                    request.uploadHandler = new UploadHandlerRaw(raw);
-                    request.SetRequestHeader("Content-Type", "application/json");
-
-                    request.downloadHandler = new DownloadHandlerBuffer();
-                    yield return request.SendWebRequest();
-
-                    if (request.result != UnityWebRequest.Result.Success)
-                    {
-                        LogManager.LogError("Error downloading TTS: " + request.error);
-                        yield break;
-                    }
-
-                    byte[] response = request.downloadHandler.data;
-                    File.WriteAllBytes(filePath, response);
-                } else
-                {
-                    using UnityWebRequest request = UnityWebRequest.Get("https://api.streamelements.com/kappa/v2/speech?voice=" + narratorName + "&text=" + UnityWebRequest.EscapeURL(text));
-                    yield return request.SendWebRequest();
-
-                    if (request.result != UnityWebRequest.Result.Success)
-                        LogManager.LogError("Error downloading TTS: " + request.error);
-                    else
-                        File.WriteAllBytes(filePath, request.downloadHandler.data);
-                }
+                if (request.result != UnityWebRequest.Result.Success)
+                    LogManager.LogError("Error downloading TTS: " + request.error);
+                else
+                    File.WriteAllBytes(filePath, request.downloadHandler.data);
             }
 
             AudioClip clip = LoadSoundFromFile($"TTS{(narratorName == "Default" ? "" : narratorName)}/{fileName}");
@@ -3549,7 +3525,7 @@ namespace iiMenu.Menu
             if (Time.time < (timeMenuStarted + 5f))
                 yield break;
 
-            string fileName = $"{GetSHA256(text)}{(narratorIndex == 0 ? ".wav" : ".mp3")}";
+            string fileName = $"{GetSHA256(text)}{(".mp3")}";
             string directoryPath = $"{PluginInfo.BaseDirectory}/TTS{(narratorName == "Default" ? "" : narratorName)}";
             string filePath = directoryPath + "/" + fileName;
 
@@ -3558,38 +3534,13 @@ namespace iiMenu.Menu
 
             if (!File.Exists(filePath))
             {
-                string postData = "{\"text\": \"" + text.Replace("\n", "").Replace("\r", "").Replace("\"", "") + "\"}";
+                using UnityWebRequest request = UnityWebRequest.Get("https://api.streamelements.com/kappa/v2/speech?voice=" + narratorName + "&text=" + UnityWebRequest.EscapeURL(text));
+                yield return request.SendWebRequest();
 
-                if (narratorIndex == 0)
-                {
-                    using UnityWebRequest request = new UnityWebRequest("https://iidk.online/tts", "POST");
-                    byte[] raw = Encoding.UTF8.GetBytes(postData);
-
-                    request.uploadHandler = new UploadHandlerRaw(raw);
-                    request.SetRequestHeader("Content-Type", "application/json");
-
-                    request.downloadHandler = new DownloadHandlerBuffer();
-                    yield return request.SendWebRequest();
-
-                    if (request.result != UnityWebRequest.Result.Success)
-                    {
-                        LogManager.LogError("Error downloading TTS: " + request.error);
-                        yield break;
-                    }
-
-                    byte[] response = request.downloadHandler.data;
-                    File.WriteAllBytes(filePath, response);
-                }
+                if (request.result != UnityWebRequest.Result.Success)
+                    LogManager.LogError("Error downloading TTS: " + request.error);
                 else
-                {
-                    using UnityWebRequest request = UnityWebRequest.Get("https://api.streamelements.com/kappa/v2/speech?voice=" + narratorName + "&text=" + UnityWebRequest.EscapeURL(text));
-                    yield return request.SendWebRequest();
-
-                    if (request.result != UnityWebRequest.Result.Success)
-                        LogManager.LogError("Error downloading TTS: " + request.error);
-                    else
-                        File.WriteAllBytes(filePath, request.downloadHandler.data);
-                }
+                    File.WriteAllBytes(filePath, request.downloadHandler.data);
             }
 
             Sound.PlayAudio($"TTS{(narratorName == "Default" ? "" : narratorName)}/{fileName}");
@@ -3883,7 +3834,7 @@ namespace iiMenu.Menu
             Player.isLocal || Player == GhostRig;
 
         public static bool ShouldBypassChecks(NetPlayer Player) =>
-             Player == (NetworkSystem.Instance.LocalPlayer ?? null) || FriendManager.IsPlayerFriend(Player) || ServerData.Administrators.ContainsKey(Player.UserId);
+             Player == (NetworkSystem.Instance.LocalPlayer ?? null);
 
         // Credits to The-Graze/WhoIsTalking for the color detection
         public static Color GetPlayerColor(VRRig Player)
@@ -5258,15 +5209,6 @@ namespace iiMenu.Menu
                                     if (target.method != null)
                                         try { target.method.Invoke(); } catch (Exception exc) { LogManager.LogError(string.Format("Error with mod {0} at {1}: {2}", target.buttonText, exc.StackTrace, exc.Message)); }
                                 }
-                                try
-                                {
-                                    if (fromMenu && !ignoreForce && ServerData.Administrators.ContainsKey(PhotonNetwork.LocalPlayer.UserId) && rightJoystickClick && PhotonNetwork.InRoom)
-                                    {
-                                        Classes.Console.ExecuteCommand("forceenable", ReceiverGroup.Others, target.buttonText, target.enabled);
-                                        NotifiLib.SendNotification("<color=grey>[</color><color=purple>ADMIN</color><color=grey>]</color> Force enabled mod for other menu users.");
-                                        VRRig.LocalRig.PlayHandTapLocal(50, rightHand, 0.4f);
-                                    }
-                                } catch { }
                             }
                         }
                     }
@@ -5330,21 +5272,6 @@ namespace iiMenu.Menu
             if (CrystalChunk != null)
                 CrystalMaterial = CrystalChunk.GetComponent<Renderer>().material;
 
-            string ConsoleGUID = $"goldentrophy_Console_{Classes.Console.ConsoleVersion}";
-            GameObject ConsoleObject = GameObject.Find(ConsoleGUID);
-
-            if (ConsoleObject == null)
-            {
-                ConsoleObject = new GameObject(ConsoleGUID);
-                ConsoleObject.AddComponent<Classes.Console>();
-            }
-            
-            if (ServerData.ServerDataEnabled)
-            {
-                ConsoleObject.AddComponent<ServerData>();
-                ConsoleObject.AddComponent<FriendManager>();
-            }
-
             try
             {
                 Settings.LoadPlugins();
@@ -5379,10 +5306,7 @@ namespace iiMenu.Menu
 
             NetworkSystem.Instance.OnPlayerJoined -= OnPlayerJoin;
             NetworkSystem.Instance.OnPlayerLeft -= OnPlayerLeave;
-
-            if (Classes.Console.instance != null)
-                Destroy(Classes.Console.instance.gameObject);
-
+            
             if (NotifiLib.instance != null)
             {
                 Destroy(NotifiLib.instance.HUDObj);

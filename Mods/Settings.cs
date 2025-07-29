@@ -2507,7 +2507,6 @@ namespace iiMenu.Mods
         {
             string[] narratorNames = new string[]
             {
-                "Default",
                 "Kimberly",
                 "Brian",
                 "Matthew",

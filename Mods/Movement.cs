@@ -235,8 +235,6 @@ namespace iiMenu.Mods
                     }
                     if (GetIndex("Non-Sticky Platforms").enabled)
                         leftplat.transform.position += TrueLeftHand().right * ((0.025f + (leftplat.transform.localScale.x / 2f)) * (scaleWithPlayer ? GTPlayer.Instance.scale : 1f));
-
-                    FriendManager.PlatformSpawned(true, leftplat.transform.position, leftplat.transform.rotation, leftplat.transform.localScale, GetPlatformPrimitiveType());
                 }
             }
             else
@@ -255,8 +253,6 @@ namespace iiMenu.Mods
                     leftplat = null;
                     if (platformMode == 4 && rightplat == null)
                         UpdateClipColliders(true);
-
-                    FriendManager.PlatformDespawned(true);
                 }
             }
 
@@ -300,8 +296,6 @@ namespace iiMenu.Mods
                     }
                     if (GetIndex("Non-Sticky Platforms").enabled)
                         rightplat.transform.position -= TrueRightHand().right * ((0.025f + (rightplat.transform.localScale.x / 2f)) * (scaleWithPlayer ? GTPlayer.Instance.scale : 1f));
-
-                    FriendManager.PlatformSpawned(false, rightplat.transform.position, rightplat.transform.rotation, rightplat.transform.localScale, GetPlatformPrimitiveType());
                 }
             }
             else
@@ -320,8 +314,6 @@ namespace iiMenu.Mods
                     rightplat = null;
                     if (platformMode == 4 && leftplat == null)
                         UpdateClipColliders(true);
-
-                    FriendManager.PlatformDespawned(false);
                 }
             }
         }
